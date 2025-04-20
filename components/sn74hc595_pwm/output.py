@@ -11,7 +11,7 @@ DEPENDENCIES = ['sn74hc595']
 CONF_SHIFT_REGISTER_ID = 'shift_register_id'
 
 # Configuration schema for output platform
-PLATFORM_SCHEMA = output.FLOAT_OUTPUT_PLATFORM_SCHEMA.extend({
+PLATFORM_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend({
     cv.GenerateID(output.CONF_ID): cv.declare_id(SN74HC595PWMOutput),
     cv.Required(CONF_SHIFT_REGISTER_ID): cv.use_id(sn74hc595.SN74HC595Component),
     cv.Required(CONF_PIN): cv.int_range(min=0, max=255),
