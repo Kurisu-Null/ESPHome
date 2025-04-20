@@ -35,36 +35,9 @@ async def to_code(config):
     cg.add(var.set_frequency(config[CONF_FREQUENCY]))
     
     # Create and register output
-    output_var = cg.Pvariable(config[CONF_ID], var.create_output())
-    await output.register_output(output_var, config)
+    output_var = var.create_output()
+    # Register with output platform
+    await output.register_output(output_var, {})
 
-# Register as a platform for output
-output_ns = cg.esphome_ns.namespace('output')
-OutputRegistry = output_ns.class_('OutputRegistry')
+# This component is registered as an output platform in output.py
 MULTI_CONF = True
-
-# Configuration schema for output platform
-def validate_output_platform(config):
-    if not config:
-        config = {}
-    
-    # Default values
-    config = output.FLOAT_OUTPUT_SCHEMA.extend({
-        cv.GenerateID(): cv.declare_id(SN74HC595PWMOutput),
-        cv.Required(CONF_SHIFT_REGISTER_ID): cv.use_id(sn74hc595.SN74HC595Component),
-        cv.Required(CONF_PIN): cv.int_range(min=0, max=255),
-        cv.Optional(CONF_FREQUENCY, default=1000): cv.int_range(min=1, max=20000),
-    })(config)
-    
-    return config
-
-async def register_output_platform(config, key, component):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    
-    shift_register = await cg.get_variable(config[CONF_SHIFT_REGISTER_ID])
-    cg.add(var.set_parent(shift_register))
-    cg.add(var.set_pin(config[CONF_PIN]))
-    cg.add(var.set_frequency(config[CONF_FREQUENCY]))
-    
-    await output.register_output(var, config)
